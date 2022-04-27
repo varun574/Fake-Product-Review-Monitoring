@@ -6,6 +6,10 @@ const productSchema = new mongoose.Schema({
         type : String,
         required : [true,"Product Name is required"]
     },
+    product_parent : {
+        type : String,
+        required : [true, 'product_parent is required']
+    },
     price : {
         type : Number,
         required : [true,'Price is required'] 

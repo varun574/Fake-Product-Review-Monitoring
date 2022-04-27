@@ -183,6 +183,7 @@ router.route("/rate/:product_name")
 router.route("/:name")
   .get(async (req,res)=>{
     try{
+      console.log("here")
       let product = await Product.findOne({product_name : req.params.name}).populate('reviews');
       if(product===null)
       res.status(404).json({field:"product_name",error:"Product doesn't exist"})

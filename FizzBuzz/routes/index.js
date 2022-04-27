@@ -362,6 +362,56 @@ router.route('/addproduct')
   }
 })
 
+router.get("/reviews", async (req,res,next)=>{
+  if(!req.session.username)
+  return res.redirect('/login')
+  try{
+    let result = await axios.get("http://localhost:8002/review/",{
+      headers : {
+        "Authorization" : `Bearer ${req.cookies.accessToken}`,
+      }
+    })
+    res.render("reviews",{reviews : result.data, username : req.session.username})
+  }
+  catch(e){
+    console.log(e);
+    if(e.response===undefined)
+      return next(e);
+    res.redirect('/')
+  }
+})
+
+router.get("/monitor",async  (req,res,next)=>{
+  if(!req.session.username)
+  return res.redirect('/login')
+  try{
+    let result = await axios.get("http://localhost:8002/review/",{
+      headers : {
+        "Authorization" : `Bearer ${req.cookies.accessToken}`,
+      }
+    })
+    let reviews = result.data
+    result = await axios.post("http://localhost:5000/monitor",{
+      reviews
+    },{
+      headers : {
+        "Authorization" : `Bearer ${req.cookies.accessToken}`,
+      }
+    })
+    await axios.post("http://localhost:8002/review/monitor",result.data,{
+      headers : {
+        "Authorization" : `Bearer ${req.cookies.accessToken}`,
+      }
+    })
+    res.redirect("/reviews");
+  }
+  catch(e){
+    if(e.response===undefined)
+      return next(e);
+    res.redirect('/')
+  }
+})
+
 
 
 module.exports = router;

@@ -55,18 +55,45 @@
         <div class="card">
           <div class="card-header" ><h5><%= review.author%></h5></div>
             <div class="card-body">
+              <div class="review-star-ratings" style="width: fit-content;">
+                <% if(review.rating>=1){%>
+                <i class="fa-regular fa-star star fa-solid"  style="color:#ff9529"></i>
+                <%}else{%>
+                  <i class="fa-regular fa-star star" style="color:#ff9529"></i>
+                <%}%>
+                <% if(review.rating>=2){%>
+                  <i class="fa-regular fa-star star fa-solid"  style="color:#ff9529"></i>
+                <%}else{%>
+                  <i class="fa-regular fa-star star" style="color:#ff9529"></i>
+                <%}%>
+                <% if(review.rating>=3){%>
+                  <i class="fa-regular fa-star star fa-solid"  style="color:#ff9529"></i>
+                <%}else{%>
+                  <i class="fa-regular fa-star star" style="color:#ff9529"></i>
+                <%}%>
+                <% if(review.rating>=4){%>
+                  <i class="fa-regular fa-star star fa-solid"  style="color:#ff9529"></i>
+                <%}else{%>
+                  <i class="fa-regular fa-star star" style="color:#ff9529"></i>
+                <%}%>
+                <% if(review.rating>=5){%>
+                  <i class="fa-regular fa-star star fa-solid"  style="color:#ff9529"></i>
+                <%}else{%>
+                  <i class="fa-regular fa-star star" style="color:#ff9529"></i>
+                <%}%>
+              </div>
               <b><%= review.reviewHead%></b><br>
               <p><%= review.reviewBody%></p>
             </div>
           <div class="card-footer">
             <% if(review.likedBy.includes(username)){ %>
               <small class="text-success">You liked this</small><br>
-              <i class="fa fa-thumbs-up" style="font-size:30px; cursor: pointer;" id="likebtn" ></i>
+              <i class="fa fa-thumbs-up likebtn" style="font-size:30px; cursor: pointer;"  ></i>
             <%}else{%>
-              <i class="fa fa-thumbs-o-up" style="font-size:30px; cursor: pointer;" id="likebtn" ></i>
+              <i class="fa fa-thumbs-o-up likebtn" style="font-size:30px; cursor: pointer;"  ></i>
             <%}%>
             <p style="display: none;"><%= review._id%></p>
-            <b ><p id="votes" style="display: inline;"><%= review.helpful%></p></b> found this helpful
+            <b class="votes"><p  style="display: inline;"><%= review.helpful%></p></b> found this helpful
           </div>
       </div>
         <%
@@ -104,14 +131,14 @@
     }
     $(document).ready(function(e){
       resetColors();
-      $('#likebtn').on('click',function(e){
+      $('.likebtn').on('click',function(e){
         let username = '<%= username%>'
         if(!username){
           return window.location = '/login'
         }
-        let votes = Number($('#votes').text())
+        let votes = Number($(this).siblings('b')[0].textContent)
         let review_id = $(this).siblings('p')[0].textContent
-        if($(this).hasClass('fa fa-thumbs-o-up')){
+        if($(e.target).hasClass('fa fa-thumbs-o-up')){
           fetch(`http://localhost:8000/review/like`,{
             method : 'POST',
             headers : {
@@ -125,10 +152,10 @@
           })
           .then((response)=>{
             if(response.ok){
-              $('#likebtn').removeClass('fa fa-thumbs-o-up')
-              $('#likebtn').addClass('fa fa-thumbs-up')
+              $(e.target).removeClass('fa fa-thumbs-o-up')
+              $(e.target).addClass('fa fa-thumbs-up')
               votes+=1;
-              $('#votes').html(`${votes}`)
+              $(this).siblings('b')[0].innerHTML=`${votes}`
             }
           })
         }
@@ -146,10 +173,10 @@
           })
           .then((response)=>{
             if(response.ok){
-              $(this).removeClass('fa fa-thumbs-up')
-              $(this).addClass('fa fa-thumbs-o-up')
+              $(e.target).removeClass('fa fa-thumbs-up')
+              $(e.target).addClass('fa fa-thumbs-o-up')
               votes-=1;
-              $('#votes').html(`${votes}`)
+              $(this).siblings('b')[0].innerHTML=`${votes}`
             }
           })
         }
