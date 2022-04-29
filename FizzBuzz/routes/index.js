@@ -1,19 +1,5 @@
 var express = require('express');
 const axios = require('axios')
-const multer = require('multer');
-const sharp = require('sharp')
-const fs = require('fs')
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './public/images')
-  },
-  filename: function (req, file, cb) {
-    const uniquePrefix= Date.now() + '-'
-    cb(null, uniquePrefix+file.originalname)
-  }
-})
-const upload = multer({ storage: storage });
-const FormData = require('form-data');
 var router = express.Router();
 
 /* GET home page. */
@@ -312,105 +298,7 @@ router.post('/search',async (req,res,next)=>{
 
 
 
-router.route('/addproduct')
-  .get(async (req,res)=>{
-    let session = req.session
-    if(session.username){
-      let result = await axios.get(`http://localhost:8001/${session.username}`)
-      console.log(result)
-      if(!(result.data.isadmin))
-      return res.redirect('/')
-      res.locals.product_nameerr = req.flash('product_name')
-      res.locals.priceerr = req.flash('price')
-      res.locals.descriptionerr = req.flash('description')
-      res.locals.imageerr = req.flash('image')
-      res.locals.categoryerr = req.flash('category')
-      res.locals.stockerr = req.flash('stock')
-      res.render('addproduct',{username : session.username || ""})
-    }
-    else{
-      return res.sendStatus(404);
-    }
-    
-})
-.post(upload.single('image'),async (req,res)=>{
-  try{
-    let form = new FormData();
-    form.append('product_name',req.body.product_name)
-    form.append('price',req.body.price)
-    form.append('description',req.body.description)
-    form.append('token',req.body.token)
-    form.append('image',fs.createReadStream(req.file.path))
-    let result = await axios.post("http://localhost:8002/",form,{
-      headers : {
-        "Authorization" : `Bearer ${req.cookies.accessToken}`,
-        ...form.getHeaders()
-      }
-    })
-    fs.unlinkSync(req.file.path)  
-    req.flash('add-success','Successfully added the product.')
-    res.redirect('/products')
-  }
-  catch(e){
-    if(e.response===undefined)
-      return next(e);
-    req.flash('add-failure','Product save unsuccessful.Please add again.')
-    e.response.data.forEach(element => {
-      req.flash(element.field,element.error)
-    });
-    res.redirect('/addproduct')
-  }
-})
 
-router.get("/reviews", async (req,res,next)=>{
-  if(!req.session.username)
-  return res.redirect('/login')
-  try{
-    let result = await axios.get("http://localhost:8002/review/",{
-      headers : {
-        "Authorization" : `Bearer ${req.cookies.accessToken}`,
-      }
-    })
-    res.render("reviews",{reviews : result.data, username : req.session.username})
-  }
-  catch(e){
-    console.log(e);
-    if(e.response===undefined)
-      return next(e);
-    res.redirect('/')
-  }
-})
-
-router.get("/monitor",async  (req,res,next)=>{
-  if(!req.session.username)
-  return res.redirect('/login')
-  try{
-    let result = await axios.get("http://localhost:8002/review/",{
-      headers : {
-        "Authorization" : `Bearer ${req.cookies.accessToken}`,
-      }
-    })
-    let reviews = result.data
-    result = await axios.post("http://localhost:5000/monitor",{
-      reviews
-    },{
-      headers : {
-        "Authorization" : `Bearer ${req.cookies.accessToken}`,
-      }
-    })
-    await axios.post("http://localhost:8002/review/monitor",result.data,{
-      headers : {
-        "Authorization" : `Bearer ${req.cookies.accessToken}`,
-      }
-    })
-    res.redirect("/reviews");
-  }
-  catch(e){
-    if(e.response===undefined)
-      return next(e);
-    res.redirect('/')
-  }
-})
 
 
 

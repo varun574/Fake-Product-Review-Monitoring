@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
   </head>
+  <style>   
+    button:hover {   
+           opacity: 0.7;   
+       }   
+    
+   </style>
   <body>
   <%- include('header')-%>
   <% if(message.length!==0) { %>
@@ -15,46 +21,77 @@
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       <strong><%= message[0] %></strong>
     </div>
-  <%}%>  
-  <form action="/register" method="post">
-    <div class="mb-3 mt-3">
-      <label for="name" class="form-label">Username:</label>
-      <input type="text" class="form-control" id="name" placeholder="Enter email" name="name">
-      <% if(nameerr.length!==0) {
-        nameerr.forEach(err=>{
-          %>
-          <small style="color: red;">*<%= err %></small>
-          <%
-        })
-        %>
-      <%}%>
-    </div>
-    <div class="mb-3 mt-3">
-      <label for="email" class="form-label">Email:</label>
-      <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
-      <% if(emailerr.length!==0) {
-        emailerr.forEach(err=>{
-          %>
-          <small style="color: red;">*<%= err %></small>
-          <%
-        })
-        %>
-      <%}%>
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password:</label>
-      <input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
-      <% if(passworderr.length!==0) {
-        passworderr.forEach(err=>{
-          %>
-          <small style="color: red;">*<%= err %></small>
-          <%
-        })
-        %>
-      <%}%>
-    </div>
-    <button type="submit" class="btn btn-primary">Register</button>
-  </form>
+  <%}%>
+  <h1 style="text-align: center;">  Register to FizzBuzz  </h1><br><br>
+  <div class="row">
+    <div class="col-1"></div>  
+      <div class="col-4">
+        <div class="card border-0">
+          <form action="/register" method="post">
+            <div class="mb-3 mt-3">
+              <label for="name" class="form-label">Username:</label>
+              <input type="text" class="form-control" id="name" placeholder="Enter email" name="name" style="width: 100%;margin: 8px 0;padding: 12px 20px;   display: inline-block; border: 2px solid rgb(65, 201, 110);border-radius: 15px;box-sizing: border-box;" required>
+              <% if(nameerr.length!==0) {
+                nameerr.forEach(err=>{
+                  %>
+                  <small style="color: red;">*<%= err %></small>
+                  <%
+                })
+                %>
+              <%}%>
+            </div>
+            <div class="mb-3 mt-3">
+              <label for="email" class="form-label">Email:</label>
+              <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" style="width: 100%;margin: 8px 0;padding: 12px 20px;   display: inline-block; border: 2px solid rgb(65, 201, 110);border-radius: 15px;box-sizing: border-box;"  pattern=".+@gmail\.com" required>
+              <% if(emailerr.length!==0) {
+                emailerr.forEach(err=>{
+                  %>
+                  <small style="color: red;">*<%= err %></small>
+                  <%
+                })
+                %>
+              <%}%>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password:</label>
+              <input type="password" class="form-control" id="password" placeholder="Enter password" name="password" style="width: 100%;margin: 8px 0;padding: 12px 20px;    border: 2px solid rgb(65, 201, 110);border-radius: 15px;box-sizing: border-box;" minlength="8" required>
+              <i class="fa-solid fa-eye" id="showPassword" style="float: right; margin-top: -45px; font-size: 25px; margin-right: 5px; cursor: pointer;"></i>
+              <% if(passworderr.length!==0) {
+                passworderr.forEach(err=>{
+                  %>
+                  <small style="color: red;">*<%= err %></small>
+                  <%
+                })
+                %>
+              <%}%>
+            </div>
+            <button type="submit" class="btn btn-success" style="width: 100%;">Register</button>
+          </form>
+          <br>
+          <a href="/login" style="display: block; text-align: center;">Already an existing user?</a>
+        </div>
+      </div>
+      <div class="col-1"></div>
+      <div class="col-5">
+       <img src="/images/register.jpeg" width="100%" height="100%">
+      </div>
+      <div class="col-1"></div>
+  </div>
+  
   <%- include('footer') -%>
+  <script>
+    $('#showPassword').click(function(e){
+      if($(this).hasClass('fa-eye')){
+        $('#password').attr('type','text')
+        $(this).removeClass('fa-eye')
+        $(this).addClass('fa-eye-slash')
+      }
+      else{
+        $('#password').attr('type','password')
+        $(this).removeClass('fa-eye-slash')
+        $(this).addClass('fa-eye')
+      }
+    })
+  </script>
   </body>
 </html>

@@ -10,7 +10,7 @@
   </head>
   <body>
   <%- include('header')-%> 
-  <form action="/addproduct" method="post" enctype="multipart/form-data">
+  <form action="/admin/addproduct" method="post" enctype="multipart/form-data">
     <div>
         <input type="hidden" name="token" id="token">
     </div>
@@ -18,13 +18,25 @@
       <label for="product_name" class="form-label">Product Name :</label>
       <input type="text" class="form-control" id="product_name" placeholder="Enter Product Name" name="product_name">
       <% if(product_nameerr.length!==0) {
-        nameerr.forEach(err=>{
+        product_nameerr.forEach(err=>{
           %>
           <small style="color: red;">*<%= err %></small>
           <%
         })
         %>
       <%}%>
+    </div>
+    <div class="mb-3">
+      <label for="product_parent" class="form-label">Brand :</label>
+      <input type="text" class="form-control" id="product_parent" placeholder="Enter Product parent" name="product_parent">
+      <% if(product_parent.length!==0) {
+        product_parent.forEach(err=>{
+          %>
+          <small style="color: red;">*<%= err %></small>
+          <%
+        })
+        %>
+      <%}%> 
     </div>
     <div class="mb-3">
       <label for="price" class="form-label">Price :</label>

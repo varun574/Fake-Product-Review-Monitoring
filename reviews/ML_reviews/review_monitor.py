@@ -410,14 +410,11 @@ def monitor(reviews):
     dataset.set_index("review_id",inplace=True)
 
     def LSA(text):
-        #text is list of reviews of same product
         
         
-        # Created TF-IDF Model
         vectorizer = TfidfVectorizer()
         X = vectorizer.fit_transform(text)
         
-        # Created SVD(Singular Value Decomposition)
         lsa = TruncatedSVD(n_components = 1,n_iter = 100)
         lsa.fit(X)
         

@@ -52,9 +52,6 @@ const UserSchema = new mongoose.Schema({
         account_number : {
             type : String,
         },
-        cvv : {
-            type : String
-        }
     },
     helpful : {
         type : Number,

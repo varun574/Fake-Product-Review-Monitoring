@@ -36,13 +36,6 @@
                       <div id="acnumberhelp" class="form-text text-danger"><%= account_number[0]%></div>
                     <%}%>
                 </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="cvv">CVV</label>
-                    <input type="text" class="form-control" id="cvv" aria-describedby="cvvhelp" placeholder="Enter CVV" name="cvv" value="<%= user.bankaccount ? user.bankaccount.cvv || '' : '' %>"> 
-                    <% if(cvv.length!==0) { %>
-                      <div id="cvvhelp" class="form-text text-danger"><%= cvv[0]%></div>
-                    <%}%>
-                </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <br>
                 <br>

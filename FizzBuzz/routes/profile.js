@@ -141,7 +141,6 @@ router.route('/edit/:username/banking')
         })
         res.locals.bankname = req.flash('bankname')
         res.locals.account_number = req.flash('account_number')
-        res.locals.cvv = req.flash('cvv')
         res.locals.message = req.flash('update_success')
         res.render('editbanking',{username : req.session.username,user : result.data.user})
     }
@@ -162,7 +161,6 @@ router.route('/edit/:username/banking')
             bankaccount : {
                 bankname : req.body.bankname,
                 account_number : req.body.account_number,
-                cvv : req.body.cvv
             }
         },{
             headers : {

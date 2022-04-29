@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FizzBuzz</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+
+<body>
+    <%- include('header')-%>
+    <form action="/admin/updateUser/<%= user.name%>" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Username</label>
+            <input type="text" class="form-control" id="name" aria-describedby="nameHelp" name="name" placeholder="Enter Username" value="<%= user.name%>">
+            <% if(nameerr.length!==0) { nameerr.forEach(err=>{
+                %>
+                <small style="color: red;">*<%= err %></small>
+                <% }) %>
+            <%}%>
+        </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" aria-describedby="passwordHelp" placeholder="Enter Password" name="password" value="<%= user.password%>">
+            <% if(passworderr.length!==0) { passworderr.forEach(err=>{
+                %>
+                <small style="color: red;">*<%= err %></small>
+                <% }) %>
+            <%}%>
+        </div>
+          <div class="mb-3">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter Email" name="email" value="<%= user.email%>">
+            <% if(emailerr.length!==0) { emailerr.forEach(err=>{
+                %>
+                <small style="color: red;">*<%= err %></small>
+                <% }) %>
+            <%}%>
+        </div>
+        <div class="mb-3">
+            <label for="mobile" class="form-label">Mobile</label>
+            <input type="text" class="form-control" id="mobile" aria-describedby="mobileHelp" name="mobile" placeholder="Enter your mobile number" value="<%= user.mobile%>">
+            <% if(mobileerr.length!==0) { mobileerr.forEach(err=>{
+                %>
+                <small style="color: red;">*<%= err %></small>
+                <% }) %>
+            <%}%>
+        </div><br>
+        <h4>Address</h4>
+        <div class="mb-3">
+            <label for="area" class="form-label">Locality/Area</label>
+            <input type="text" class="form-control" id="area" aria-describedby="emailHelp" name="area" placeholder="Enter your Locality" value="<%= user.address ? user.address.area || '' : '' %>">
+            <% if(areaerr.length!==0) { areaerr.forEach(err=>{
+                %>
+                <small style="color: red;">*<%= err %></small>
+                <% }) %>
+            <%}%>
+        </div>
+        <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <input type="text" class="form-control" id="city" aria-describedby="emailHelp" name="city" placeholder="Enter your city" value="<%= user.address ? user.address.city || '' : '' %>">
+            <% if(cityerr.length!==0) { cityerr.forEach(err=>{
+                %>
+                <small style="color: red;">*<%= err %></small>
+                <% }) %>
+            <%}%>
+        </div>
+        <div class="mb-3">
+            <label for="state" class="form-label">State</label>
+            <input type="text" class="form-control" id="state" aria-describedby="emailHelp" name="state" placeholder="Enter your state" value="<%= user.address ? user.address.state || '' : '' %>">
+            <% if(stateerr.length!==0) { stateerr.forEach(err=>{
+                %>
+                <small style="color: red;">*<%= err %></small>
+                <% }) %>
+            <%}%>
+        </div>
+        <input type="submit" name="submit" value="Update">
+    </form>
+    <%- include('footer') -%>
+</body>
+
+</html>

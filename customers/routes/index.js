@@ -98,7 +98,6 @@ router.post('/register',async function(req, res, next) {
         error : e.errors[key].message
       })
     })
-    console.log(errors);
     res.status(400)
     res.json(errors);
   }
@@ -155,20 +154,21 @@ router.get('/profile',authenticate,async (req,res,next)=>{
 
 router.get('/:name',authenticate,async (req,res)=>{
   try{
-    console.log("here")
     if(req.user.username !== req.params.name){
+      if(req.user.admin !== true)
       return res.status(403).json({message : "Unauthorized"})
     }
-    let user = await User.findOne({name : req.user.username})
+    let user = await User.findOne({name : req.params.name})
     res.json(user)
   }
   catch(e){
-    res.status(404).json(e)
+    res.status(400).json(e)
   }
 })
 router.post('/:name',authenticate, async (req,res,next)=>{
   try{
     if(req.user.username !== req.params.name){
+      if(req.user.admin !== true)
       return res.status(403).json({message : "Unauthorized"})
     }
     let user = await User.findOne({name : req.params.name})                                                                                                                                                       
@@ -192,8 +192,19 @@ router.post('/:name',authenticate, async (req,res,next)=>{
     res.json({message : "Successfully Updated"})
   }
   catch(e){
-    res.status(400).json(e)
+    let errors =[]
+    Object.keys(e.errors).map((key)=>{
+      errors.push({
+        field : key,
+        error : e.errors[key].message
+      })
+    })
+    res.status(400)
+    res.json(errors);
   }
+})
+router.delete('/:name', authenticate, (req,res,next)=>{
+  res.json("ok")
 })
 
 router.post('/updateBalance/:name',authenticate,async (req,res)=>{
@@ -219,7 +230,6 @@ function authenticate(req,res,next){
   jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,data)=>{
     if(err) return res.status(403).json({message : 'Unauthorized'});
     req.user = data
-    console.log("here")
     next()
   })
 }

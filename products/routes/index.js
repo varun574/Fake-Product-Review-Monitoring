@@ -19,21 +19,21 @@ const s3 = new S3({
 })
 
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, './public/images')
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.originalname)
-//   }
-// })
-const storage = multerS3({
-  s3 : s3,
-  bucket : process.env.AWS_BUCKET_NAME,
-  key : function(req,file,cb){
-    cb(null,file.originalname)
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/images')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
   }
 })
+// const storage = multerS3({
+//   s3 : s3,
+//   bucket : process.env.AWS_BUCKET_NAME,
+//   key : function(req,file,cb){
+//     cb(null,file.originalname)
+//   }
+// })
 
 const upload = multer({storage : storage})
 var fs = require('fs')
@@ -80,6 +80,15 @@ connect().then(()=>{
   })
 })
 
+function isfileuploaded(req,res,next){
+  if(!req.file){
+    return res.status(400).json([
+      {field : "image",error : "Image should be uploaded"}
+    ])
+  }
+  next()
+}
+
 
 
 router.post('/search', async (req,res,next)=>{
@@ -105,9 +114,12 @@ router.route('/')
       res.status(400).send(e);
     }
   })
-  .post(upload.single('image'),async (req,res,next)=>{
+  .post(authenticate,upload.single('image'),async (req,res,next)=>{
+    if(req.user.admin !== true)
+    return res.sendStatus(403)
     let newProduct = {
       product_name : req.body.product_name,
+      product_parent : req.body.product_parent,
       description : req.body.description,
       price : req.body.price,
       stock : req.body.stock,
@@ -117,6 +129,12 @@ router.route('/')
     try{
       const product = new Product(newProduct);
       await product.save();
+      await s3.upload({
+        Bucket : process.env.AWS_BUCKET_NAME,
+        Body : fs.createReadStream(req.file.path),
+        Key : req.file.originalname
+      }).promise()
+      fs.unlinkSync(req.file.path)
       res.json(product);
     }
     catch(e){
@@ -194,11 +212,12 @@ router.route("/:name")
       res.status(400).send(e)
     }
   })
-  .post(upload.single('image'),async (req,res,next)=>{
+  .post(authenticate,upload.single('image'),async (req,res,next)=>{
     try{
       let result;
       if(req.params.name===req.body.product_name){
         let product = {
+          product_parent : req.body.product_parent,
           description : req.body.description,
           price : req.body.price,
           stock : req.body.stock,
@@ -211,10 +230,11 @@ router.route("/:name")
         result = await Product.findOne({product_name : req.params.name});
         result.product_name=req.body.product_name;
         result.price = req.body.price;
+        result.product_parent = req.body.product_parent
         result.image = `https://fizzbuzz-products.s3.ap-south-1.amazonaws.com/${req.file.originalname}`
-        result.description = req.body.description,
-        result.stock = req.body.stock,
-        result.category = req.body.category,
+        result.description = req.body.description
+        result.stock = req.body.stock
+        result.category = req.body.category
         await result.save()
       }
     }
@@ -239,7 +259,7 @@ router.route("/:name")
       res.status(404).json(e)
     }
   })
-  router.post('/updateStock/:product_name',async (req,res)=>{
+router.post('/updateStock/:product_name',async (req,res)=>{
     try{
       if(isNaN(req.body.stock)){
         return res.status(400).json({message : "Stock must be a numerical value"})
@@ -252,7 +272,7 @@ router.route("/:name")
     }
   })
 
-  function authenticate(req,res,next){
+function authenticate(req,res,next){
     const authheader = req.headers['authorization']
     const token = authheader && authheader.split(' ')[1]
     if(token===null)return res.status(401).json({message : "Forbidden"})

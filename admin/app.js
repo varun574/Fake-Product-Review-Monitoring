@@ -3,14 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const session = require('express-session');
-const flash = require('connect-flash');
-
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var profileRouter = require('./routes/profile')
-var adminRouter = require('./routes/admin')
 
 var app = express();
 
@@ -23,27 +18,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-  secret: "fizzbuzzlogin",
-  saveUninitialized:true,
-  cookie: { maxAge: 1*60*60*100 },
-  resave: false 
-}));
-app.use(function (req, res, next) {
-  //Enabling CORS
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-client-key, x-client-token, x-client-secret, Authorization");
-    next();
-  });
 
-
-app.use(flash());
-
-app.use('/admin', adminRouter)
-app.use('/users', usersRouter);
-app.use('/profile',profileRouter);
 app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
